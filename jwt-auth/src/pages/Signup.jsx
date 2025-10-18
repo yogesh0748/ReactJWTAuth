@@ -1,21 +1,29 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const [isSignup, setIsSignup] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      if (isSignup) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -25,55 +33,107 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 animate-gradient-bg">
-      <form 
-        onSubmit={handleSignup} 
-        className="w-96 p-8 bg-gray-900 bg-opacity-90 rounded-2xl shadow-2xl space-y-6 transform transition-transform duration-500 hover:scale-105"
-      >
-        <h2 className="text-3xl font-bold text-center text-teal-400 animate-pulse">Bus Reservation Signup</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 backdrop-blur-lg">
+      <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-96 border border-white/20 transform transition-transform duration-500 hover:scale-105">
+        {/* Toggle Buttons */}
+        <div className="flex justify-center mb-6 space-x-2 bg-black/30 p-1 rounded-full">
+          <button
+            onClick={() => setIsSignup(true)}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+              isSignup ? "bg-white text-black" : "text-gray-300"
+            }`}
+          >
+            Sign up
+          </button>
+          <button
+            onClick={() => setIsSignup(false)}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+              !isSignup ? "bg-white text-black" : "text-gray-300"
+            }`}
+          >
+            Sign in
+          </button>
+        </div>
+
+        <h2 className="text-xl font-semibold text-center mb-4 text-white">
+          {isSignup ? "Create an account" : "Welcome back"}
+        </h2>
 
         {error && (
-          <p className="text-red-500 text-sm bg-red-900 bg-opacity-70 p-2 rounded animate-shake">
+          <p className="text-red-400 text-sm bg-red-900/50 p-2 rounded text-center mb-4 animate-pulse">
             {error}
           </p>
         )}
 
-        <div className="flex flex-col space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isSignup && (
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                placeholder="First name"
+                className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="Last name"
+                className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+              />
+            </div>
+          )}
+
           <input
             type="email"
-            placeholder="Email"
-            className="bg-gray-800 text-gray-100 placeholder-gray-500 p-3 rounded-md focus:ring-2 focus:ring-teal-400 focus:outline-none transition duration-300 ease-in-out hover:ring-teal-300"
+            placeholder="Enter your email"
+            className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-full focus:ring-2 focus:ring-teal-400 focus:outline-none"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="password"
-            placeholder="Password"
-            className="bg-gray-800 text-gray-100 placeholder-gray-500 p-3 rounded-md focus:ring-2 focus:ring-teal-400 focus:outline-none transition duration-300 ease-in-out hover:ring-teal-300"
+            placeholder="Enter your password"
+            className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-full focus:ring-2 focus:ring-teal-400 focus:outline-none"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
+              loading
+                ? "bg-teal-400/60 text-gray-200 cursor-not-allowed animate-pulse"
+                : "bg-gradient-to-r from-teal-500 to-cyan-500 hover:scale-105 hover:from-teal-400 hover:to-cyan-400 text-white"
+            }`}
+          >
+            {loading
+              ? isSignup
+                ? "Creating Account..."
+                : "Signing In..."
+              : isSignup
+              ? "Create an account"
+              : "Sign in"}
+          </button>
+        </form>
+
+        <p className="text-center text-gray-400 mt-4 text-sm">OR SIGN IN WITH</p>
+
+        <div className="flex justify-center mt-3 space-x-3">
+          <button className="bg-white/10 hover:bg-white/20 p-3 rounded-lg">
+            <FcGoogle size={22} />
+          </button>
+          <button className="bg-white/10 hover:bg-white/20 p-3 rounded-lg">
+            <FaApple size={22} />
+          </button>
         </div>
 
-        <button
-          type="submit"
-          className={`w-full py-3 rounded-md text-white font-semibold transition-all duration-300 transform ${
-            loading 
-              ? "bg-teal-300 cursor-not-allowed animate-pulse" 
-              : "bg-gradient-to-r from-teal-500 to-cyan-500 hover:scale-105 hover:from-teal-400 hover:to-cyan-400"
-          }`}
-          disabled={loading}
-        >
-          {loading ? "Signing up..." : "Register"}
-        </button>
-
-        <p className="text-center text-gray-400 text-sm">
-          Already have an account?{" "}
-          <a href="/login" className="text-teal-400 hover:underline hover:text-teal-300 transition-colors">
-            Login
-          </a>
+        <p className="text-center text-gray-400 mt-5 text-xs">
+          By creating an account, you agree to our{" "}
+          <span className="underline cursor-pointer">Terms & Service</span>.
         </p>
-      </form>
+      </div>
     </div>
   );
 }
