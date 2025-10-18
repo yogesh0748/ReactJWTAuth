@@ -2,11 +2,14 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase"; // <-- db for Firestore
+import { doc, setDoc } from "firebase/firestore"; // <-- Firestore methods
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [isSignup, setIsSignup] = useState(true);
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,11 +23,21 @@ export default function Signup() {
 
     try {
       if (isSignup) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        // Step 1: Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Step 2: Save extra info (fname, lname, email) in Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          fname,
+          lname,
+          email,
+          createdAt: new Date(),
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -72,11 +85,17 @@ export default function Signup() {
                 type="text"
                 placeholder="First name"
                 className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                value={fname}
+                onChange={(e) => setFname(e.target.value)}
+                required
               />
               <input
                 type="text"
                 placeholder="Last name"
                 className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                value={lname}
+                onChange={(e) => setLname(e.target.value)}
+                required
               />
             </div>
           )}

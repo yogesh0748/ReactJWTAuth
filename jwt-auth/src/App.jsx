@@ -1,26 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Signup from "./pages/Signup";
-import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import './index.css';
-function PrivateRoute({ children }) {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
-}
+
+// function PrivateRoute({ children }) {
+//   const { user } = useAuth();
+//   return user ? children : <Navigate to="/login" />;
+// }
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
+            path="/"
+            element={  
                 <Dashboard />
-              </PrivateRoute>
+               
             }
           />
         </Routes>
