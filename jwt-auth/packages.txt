@@ -1,0 +1,5 @@
+npm install framer-motion lucide-react
+
+
+mobile menu 
+    https://prismic.io/blog/css-button-animations
