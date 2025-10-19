@@ -1,12 +1,15 @@
 import Navbar from "../component/Navbar";
 import { useAuth } from "../context/AuthContext";
+import Hero from "../component/Hero";
 
 export default function Dashboard() {
   const { user, token } = useAuth();
 
   return (
     <>
-    <Navbar />
+      <Navbar />
+      <Hero />
+
     </>
   );
 }

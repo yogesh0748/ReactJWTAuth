@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AnimatedLogo from "./AnimatedLogo";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -37,11 +38,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="flex justify-between items-center px-6 py-4 bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-lg">
+    <nav className="fixed top-0 w-full flex justify-between items-center px-6 py-4 bg-[#0B1012] backdrop-blur-xl border-b border-white/20 shadow-lg"
+    >
       {/* Logo */}
       <div className="flex items-center space-x-2">
-        <h1 className="text-2xl font-semibold text-teal-400">GOGOBUS</h1>
+        <AnimatedLogo />
       </div>
+
 
       {/* Right section */}
       <div className="flex items-center space-x-6">
