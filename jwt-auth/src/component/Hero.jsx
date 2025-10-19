@@ -3,7 +3,7 @@ import RealisticCube from "./RealisticCube";
 
 export default function HeroSection() {
   return (
-    <section className="flex flex-col md:flex-row items-center justify-between min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white px-8 md:px-16 py-12 overflow-hidden">
+    <section className="flex flex-col md:flex-row items-center justify-between min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white px-8 md:px-16 py-12 overflow-hidden mt-16">
       {/* Left Side - Text */}
       <div className="md:w-1/2 flex flex-col items-start space-y-6">
         <h1 className="text-5xl md:text-6xl font-extrabold leading-tight font-[Playfair_Display]">

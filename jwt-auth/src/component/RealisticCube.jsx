@@ -8,16 +8,18 @@ import face6 from "../assets/face6.png";
 
 export default function RealisticCube() {
   const faces = [face1, face2, face3, face4, face5, face6];
-  const cubeSize = 300;
-  const halfSize = cubeSize / 2;
+
+  // Cube sizes for different screen widths
+  const cubeSizeMobile = 200; // smaller cube for mobile
+  const cubeSizeDesktop = 300; // full size for larger screens
 
   return (
-    <div className="flex items-center justify-center perspective-1000">
+    <div className="flex items-center justify-center perspective-1000 w-full">
       <motion.div
         className="relative"
         style={{
-          width: `${cubeSize}px`,
-          height: `${cubeSize}px`,
+          width: "min(300px, 80vw)", // Responsive width (max 300px)
+          height: "min(300px, 80vw)", // Responsive height (max 300px)
           transformStyle: "preserve-3d",
         }}
         animate={{
@@ -34,6 +36,9 @@ export default function RealisticCube() {
         }}
       >
         {faces.map((face, index) => {
+          const size = window.innerWidth < 768 ? cubeSizeMobile : cubeSizeDesktop;
+          const halfSize = size / 2;
+
           const rotations = [
             `rotateY(0deg) translateZ(${halfSize}px)`,
             `rotateY(90deg) translateZ(${halfSize}px)`,
@@ -47,8 +52,8 @@ export default function RealisticCube() {
               key={index}
               className="absolute rounded-lg overflow-hidden"
               style={{
-                width: `${cubeSize}px`,
-                height: `${cubeSize}px`,
+                width: `${size}px`,
+                height: `${size}px`,
                 transform: rotations[index],
                 backfaceVisibility: "hidden",
                 boxShadow: "0 10px 40px rgba(0,0,0,0.4), 0 0 25px rgba(0,0,0,0.25)",
