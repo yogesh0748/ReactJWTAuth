@@ -3,3 +3,11 @@
 .perspective-1500 {
     perspective: 1500px;
 }
+@keyframes spin-once {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin-once {
+  animation: spin-once 2s linear forwards; /* spins once during search */
+}

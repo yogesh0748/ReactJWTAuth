@@ -48,7 +48,7 @@ export default function HeroSection() {
 
   const handleJourneyClick = () => {
     if (!user) setShowPopup(true);
-    else navigate("/dashboard");
+    else navigate("/search");
   };
 
   return (
@@ -60,7 +60,8 @@ export default function HeroSection() {
           but so life doesn't escape you."
         </h1>
         <p className="text-gray-300 text-lg max-w-md">
-          Experience the journey, not just the destination. Let every mile bring you a new story.
+          Experience the journey, not just the destination. Let every mile bring
+          you a new story.
         </p>
 
         {/* Magnetic Button */}
@@ -77,53 +78,52 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Glassy Popup */}
+      {/* Slide-in Popup (content-sized, no blur, cross on right) */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/50 z-50 flex justify-end"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="relative bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl p-8 shadow-[0_0_25px_rgba(255,255,255,0.15)] text-center max-w-sm w-full text-white"
-              style={{
-                boxShadow:
-                  "0 4px 30px rgba(255,255,255,0.1), inset 0 0 20px rgba(255,255,255,0.05)",
-              }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              className="relative w-full sm:w-[400px] bg-gray-900/95 border-l border-white/20 rounded-l-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] p-8 text-white my-auto mr-4"
             >
-              {/* Close Button */}
+              {/* Close Button on Right */}
               <button
                 onClick={() => setShowPopup(false)}
-                className="absolute top-3 right-3 text-white/70 hover:text-white transition"
+                className="absolute top-4 right-4 text-white/70 hover:text-white transition"
               >
-                <X size={22} />
+                <X size={24} />
               </button>
 
-              <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
-              <p className="text-gray-200 mb-6">
-                Please sign in to start your journey.
-              </p>
+              {/* Content */}
+              <div className="flex flex-col justify-center items-center text-center">
+                <h2 className="text-3xl font-bold mb-3">Sign In Required</h2>
+                <p className="text-gray-300 mb-6 max-w-sm">
+                  Please sign in to start your journey.
+                </p>
 
-              {/* Progress Bar */}
-              <div className="w-full bg-white/20 rounded-full h-2 mb-4 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-2 transition-all duration-100"
-                  style={{ width: `${progress}%` }}
-                ></div>
+                {/* Progress Bar */}
+                <div className="w-full bg-white/20 rounded-full h-2 mb-4 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-2 transition-all duration-100"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="mt-2 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 px-6 py-2 rounded-full font-semibold text-white shadow-md"
+                >
+                  Go to Signup
+                </button>
               </div>
-
-              <button
-                onClick={() => navigate("/signup")}
-                className="mt-2 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 px-6 py-2 rounded-full font-semibold text-white shadow-md"
-              >
-                Go to Signup
-              </button>
             </motion.div>
           </motion.div>
         )}

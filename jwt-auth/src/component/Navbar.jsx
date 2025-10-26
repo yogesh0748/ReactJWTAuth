@@ -9,7 +9,6 @@ import AnimatedLogo from "./AnimatedLogo";
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
   const [firstName, setFirstName] = useState("User");
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export default function Navbar() {
         const data = docSnap.data();
         setFirstName(data.fname || "User");
       } else {
-        console.warn("No user document found");
+        console.warn("⚠️ No user document found");
         setFirstName("User");
       }
     });
@@ -31,30 +30,24 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/signup"); // redirect to signup after logout
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
   return (
-    <nav className="fixed z-50 top-0 w-full flex justify-between items-center px-6 py-4 bg-[#0B1012] backdrop-blur-xl border-b border-white/20 shadow-lg"
-    >
+    <nav className="fixed z-50 top-0 w-full flex justify-between items-center px-6 py-4 bg-[#0B1012] backdrop-blur-xl border-b border-white/20 shadow-lg">
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <AnimatedLogo />
       </div>
-
 
       {/* Right section */}
       <div className="flex items-center space-x-6">
         {user ? (
           <>
             <span className="text-gray-200 font-medium">
-              Hello,{" "}
-              <span className="text-teal-300 transition-colors duration-300">
-                {firstName}
-              </span>
+              Hello, <span className="text-teal-300">{firstName}</span>
             </span>
 
             {/* Notification Icon */}

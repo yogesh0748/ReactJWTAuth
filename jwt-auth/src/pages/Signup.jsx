@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase"; // <-- db for Firestore
-import { doc, setDoc } from "firebase/firestore"; // <-- Firestore methods
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
   const [isSignup, setIsSignup] = useState(true);
@@ -14,7 +11,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  const { signup, login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,21 +21,10 @@ export default function Signup() {
 
     try {
       if (isSignup) {
-        // Step 1: Create user in Firebase Auth
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Step 2: Save extra info (fname, lname, email) in Firestore
-        await setDoc(doc(db, "users", user.uid), {
-          fname,
-          lname,
-          email,
-          createdAt: new Date(),
-        });
+        await signup(email, password, fname, lname);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await login(email, password);
       }
-      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,7 +35,7 @@ export default function Signup() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 backdrop-blur-lg">
       <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-96 border border-white/20 transform transition-transform duration-500 hover:scale-105">
-        {/* Toggle Buttons */}
+        {/* Toggle */}
         <div className="flex justify-center mb-6 space-x-2 bg-black/30 p-1 rounded-full">
           <button
             onClick={() => setIsSignup(true)}
@@ -147,11 +134,6 @@ export default function Signup() {
             <FaApple size={22} />
           </button>
         </div>
-
-        <p className="text-center text-gray-400 mt-5 text-xs">
-          By creating an account, you agree to our{" "}
-          <span className="underline cursor-pointer">Terms & Service</span>.
-        </p>
       </div>
     </div>
   );

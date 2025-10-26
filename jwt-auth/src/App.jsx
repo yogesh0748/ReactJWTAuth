@@ -1,31 +1,28 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import Search from "./component/Search";
+import Navbar from "./component/Navbar";
 import { AuthProvider } from "./context/AuthContext";
-import './index.css';
-
-// function PrivateRoute({ children }) {
-//   const { user } = useAuth();
-//   return user ? children : <Navigate to="/login" />;
-// }
+import "./index.css";
+import AdminPage from "./pages/AdminPage";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={  
-                <Dashboard />
-               
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
 
-    
+    <BrowserRouter>
+      <AuthProvider>
+        {/* Navbar stays visible on every route */}
+        <Navbar />
+
+        <Routes>
+          <Route path="/" element={<Dashboard />} />   {/* Hero Section here */}
+          <Route path="/search" element={<Search />} /> {/* Search Page */}
+          <Route path="/signup" element={<Signup />} /> {/* Signup Page */}
+           <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+
   );
 }
