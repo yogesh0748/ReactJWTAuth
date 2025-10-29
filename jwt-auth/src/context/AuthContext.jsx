@@ -104,8 +104,22 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Bus Journey management (admin only)
   const createBusJourney = async (journeyData) => {
-    if (role !== "admin") throw new Error("Unauthorized: Only admin can create journeys.");
-    await addDoc(collection(db, "busJourneys"), journeyData);
+    if (role !== "admin") throw new Error("Unauthorized");
+    
+    // Validate price
+    if (!journeyData.pricePerSeat || isNaN(journeyData.pricePerSeat)) {
+      throw new Error("Invalid price per seat");
+    }
+
+    // Convert price to number
+    const dataToSave = {
+      ...journeyData,
+      pricePerSeat: Number(journeyData.pricePerSeat),
+      seats: Array(40).fill({ available: true }),
+      createdAt: new Date()
+    };
+
+    await addDoc(collection(db, "busJourneys"), dataToSave);
   };
 
   const getBusJourneys = async () => {

@@ -11,6 +11,7 @@ export default function AdminPage() {
     time: "",
     busNumber: "",
     busType: "Seater",
+    pricePerSeat: "", // Add this line
   });
   const [loading, setLoading] = useState(false);
   const [seats, setSeats] = useState(generateSeats()); // 8x5 = 40
@@ -63,6 +64,7 @@ export default function AdminPage() {
         time: "",
         busNumber: "",
         busType: "Seater",
+                pricePerSeat: "", // Add this line
       });
       setSeats(generateSeats());
       await fetchJourneys();
@@ -161,6 +163,22 @@ export default function AdminPage() {
             <option value="Non-AC Seater">Non-AC Seater</option>
             <option value="Non-AC Sleeper">Non-AC Sleeper</option>
           </select>
+        </div>
+
+        {/* Price per Seat */}
+        <div>
+          <label className="text-white/70 text-sm font-medium mb-2 block">
+            Price per Seat (₹)
+          </label>
+          <input
+            type="number"
+            name="pricePerSeat"
+            value={formData.pricePerSeat}
+            onChange={handleChange}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-cyan-500 transition-all"
+            placeholder="Enter price per seat"
+            required
+          />
         </div>
 
         {/* Seat layout */}

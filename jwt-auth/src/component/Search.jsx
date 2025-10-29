@@ -4,9 +4,11 @@ import { ArrowLeftRight, Bus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Search() {
   const { getBusJourneys } = useAuth();
+  const navigate = useNavigate();
   const [cities, setCities] = useState([]);
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
@@ -107,8 +109,7 @@ function Search() {
   };
 
   const handleBooking = (journey) => {
-    // TODO: Implement booking logic
-    alert(`Booking for Bus ${journey.busNumber}`);
+    navigate('/seat-booking', { state: { journey } });
   };
 
   return (
@@ -289,13 +290,24 @@ function Search() {
                       <p className="text-white font-medium">{journey.time}</p>
                     </div>
                     <div className="text-right">
+                      <p className="text-white/50 text-sm">Price per Seat</p>
+                      <p className="text-white font-medium">₹{journey.pricePerSeat}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white/50 text-sm">Date</p>
+                      <p className="text-white font-medium">{journey.date}</p>
+                    </div>
+                    <div className="text-right">
                       <p className="text-white/50 text-sm">Available Seats</p>
                       <p className="text-white font-medium">
                         {journey.seats?.filter(s => s.available).length || 0}/40
                       </p>
                     </div>
                   </div>
-
+                  
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
