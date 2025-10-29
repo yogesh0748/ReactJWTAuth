@@ -3,6 +3,11 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "../firebase";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
 export default function Signup() {
   const [isSignup, setIsSignup] = useState(true);
@@ -13,24 +18,104 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Alert state (reusable slide-in alert like Hero's prompt)
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertActionLabel, setAlertActionLabel] = useState("");
+  const [alertAction, setAlertAction] = useState(null);
+
   const { signup, login } = useAuth();
   const navigate = useNavigate();
+
+  const emailIsValid = (e) => /^\S+@\S+\.\S+$/.test(e);
+  const passwordIsValid = (p) => typeof p === "string" && p.length >= 6;
+
+  const showAlert = (message, actionLabel = "", action = null) => {
+    setAlertMessage(message);
+    setAlertActionLabel(actionLabel);
+    setAlertAction(() => action);
+  };
+
+  const closeAlert = () => {
+    setAlertMessage("");
+    setAlertActionLabel("");
+    setAlertAction(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    // Basic client-side validation
+    if (!emailIsValid(email)) {
+      setLoading(false);
+      setError("Please enter a valid email address.");
+      showAlert("Invalid email. Please provide a valid email address.");
+      return;
+    }
+
+    if (!passwordIsValid(password)) {
+      setLoading(false);
+      setError("Password must be at least 6 characters.");
+      showAlert("Password too short. Use 6+ characters.");
+      return;
+    }
+
+    if (isSignup) {
+      if (!fname.trim() || !lname.trim()) {
+        setLoading(false);
+        setError("Please provide first and last name.");
+        showAlert("Name required. Provide first & last name to sign up.");
+        return;
+      }
+    }
+
     try {
       if (isSignup) {
+        // create account
         await signup(email, password, fname, lname);
-        navigate("/");
       } else {
+        // sign in
         await login(email, password);
-        navigate("/");
       }
+
+      // get current auth user uid
+      const auth = getAuth();
+      const current = auth.currentUser;
+      const uid = current?.uid;
+
+      // default redirect
+      let destination = "/";
+
+      if (uid) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            if (data?.role === "admin") {
+              destination = "/admin";
+            }
+          } else {
+            // User auth is valid but user doc not found in users collection
+            // Show alert with option to create account (redirect to signup)
+            showAlert(
+              "User record not found in database. Would you like to create an account record?",
+              "Create account",
+              () => navigate("/signup")
+            );
+            setLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.warn("Failed to read user role, defaulting to home:", err);
+        }
+      }
+
+      navigate(destination);
     } catch (err) {
-      setError(err.message);
+      const msg = err?.message || "Authentication failed";
+      setError(msg);
+      showAlert(msg);
     } finally {
       setLoading(false);
     }
@@ -139,6 +224,47 @@ export default function Signup() {
           </button>
         </div>
       </div>
+
+      {/* Alert box (similar style to Hero popup) */}
+      <AnimatePresence>
+        {alertMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="fixed top-6 right-6 z-50"
+          >
+            <div className="w-[360px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <div className="font-semibold text-slate-900 mb-1">Notice</div>
+                  <div className="text-sm text-slate-700">{alertMessage}</div>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  {alertAction && (
+                    <button
+                      onClick={() => {
+                        if (typeof alertAction === "function") alertAction();
+                        closeAlert();
+                      }}
+                      className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm"
+                    >
+                      {alertActionLabel || "OK"}
+                    </button>
+                  )}
+                  <button
+                    onClick={closeAlert}
+                    className="text-slate-400 hover:text-slate-600 p-1"
+                    aria-label="Close"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

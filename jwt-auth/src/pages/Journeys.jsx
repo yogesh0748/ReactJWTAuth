@@ -25,7 +25,7 @@ export default function Journeys() {
       try {
         console.log('Fetching journeys for user:', user.uid);
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        
+
         if (!userDoc.exists()) {
           console.warn("No user document found");
           return;
@@ -71,25 +71,23 @@ export default function Journeys() {
           <h1 className="text-3xl font-bold text-slate-900 mb-4 sm:mb-0">
             {filter === "upcoming" ? "Upcoming Journeys" : "Past Journeys"}
           </h1>
-          
+
           <div className="flex gap-2 bg-white p-1 rounded-full shadow-sm border border-gray-200">
             <button
               onClick={() => navigate("/journeys?filter=upcoming")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filter === "upcoming"
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === "upcoming"
                   ? "bg-blue-600 text-white"
                   : "hover:bg-gray-50 text-slate-600"
-              }`}
+                }`}
             >
               Upcoming
             </button>
             <button
               onClick={() => navigate("/journeys?filter=past")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filter === "past"
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === "past"
                   ? "bg-blue-600 text-white"
                   : "hover:bg-gray-50 text-slate-600"
-              }`}
+                }`}
             >
               Past
             </button>
@@ -121,7 +119,7 @@ export default function Journeys() {
                 No {filter} journeys found
               </h3>
               <p className="text-gray-500">
-                {filter === "upcoming" 
+                {filter === "upcoming"
                   ? "Book a new journey to get started!"
                   : "Your past journeys will appear here"}
               </p>
@@ -188,15 +186,10 @@ export default function Journeys() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => navigate(`/journey/${journey.journeyId}`)}
-                      className="flex-1 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-                    >
-                      View Details
-                    </button>
+
                     {filter === "upcoming" && (
                       <button
-                        onClick={() => navigate(`/ticket/${journey.journeyId}`)}
+                        onClick={() => navigate(`/ticket/${journey.journeyId}?bookedAt=${journey.bookedAt.seconds}`)}
                         className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                       >
                         Show Ticket

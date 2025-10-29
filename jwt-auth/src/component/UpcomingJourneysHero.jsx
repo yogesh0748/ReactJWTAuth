@@ -205,10 +205,10 @@ export default function UpcomingJourneysHero() {
 
                   <div className="mt-4 flex gap-2">
                     <button
-                      onClick={() => navigate(`/journey/${booking.journeyId}`)}
+                      onClick={() => navigate(`/ticket/${booking.journeyId}?bookedAt=${booking.bookedAt.seconds}`)}
                       className="flex-1 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
                     >
-                      View Details
+                      View Ticket
                     </button>
                   </div>
                 </motion.div>

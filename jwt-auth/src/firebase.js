@@ -11,7 +11,11 @@ const firebaseConfig = {
   storageBucket: "jwt-auth-782ea.appspot.com",
   messagingSenderId: "1049676598289",
   appId: "1:1049676598289:web:3cfd838df787525496f5b0",
-  measurementId: "G-RNZQ85STKK"
+  measurementId: "G-RNZQ85STKK",
+   "functions": {
+    "source": "functions",
+    "runtime": "nodejs16"
+  }
 };
 
 // Initialize Firebase

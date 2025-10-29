@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 import UpcomingJourneysHero from "./UpcomingJourneysHero";
 
 export default function HeroSection() {
-  const { user } = useAuth();
+  const { user, role } = useAuth(); // Add role from useAuth
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -48,9 +48,18 @@ export default function HeroSection() {
     }
   }, [showPopup, navigate]);
 
-  const handleJourneyClick = () => {
-    if (!user) setShowPopup(true);
-    else navigate("/search");
+  const handleActionClick = () => {
+    if (!user) {
+      setShowPopup(true);
+      return;
+    }
+
+    // Redirect based on role
+    if (role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/search");
+    }
   };
 
   // If route has filter=upcoming, show the UpcomingJourneysHero instead of default hero
@@ -77,23 +86,27 @@ export default function HeroSection() {
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <button
-              onClick={handleJourneyClick}
+              onClick={handleActionClick}
               className="px-6 py-3 rounded-full text-white font-semibold bg-blue-600 hover:bg-blue-700 shadow-md transition"
             >
-              Start Your Journey
+              {role === "admin" ? "Create Journey" : "Start Your Journey"}
             </button>
 
-            <button
-              onClick={() => navigate("/routes")}
-              className="px-5 py-3 rounded-full text-slate-800 font-medium border border-gray-300 bg-white hover:bg-gray-50 transition"
-            >
-              View Routes
-            </button>
+            {role !== "admin" && (
+              <button
+                onClick={() => navigate("/routes")}
+                className="px-5 py-3 rounded-full text-slate-800 font-medium border border-gray-300 bg-white hover:bg-gray-50 transition"
+              >
+                View Routes
+              </button>
+            )}
 
-            <div className="text-sm text-slate-500 mt-2 sm:mt-0">
-              Prefer phone?{" "}
-              <span className="text-slate-700 font-medium">+1 (800) GOGOBUS</span>
-            </div>
+            {role !== "admin" && (
+              <div className="text-sm text-slate-500 mt-2 sm:mt-0">
+                Prefer phone?{" "}
+                <span className="text-slate-700 font-medium">+1 (800) GOGOBUS</span>
+              </div>
+            )}
           </div>
         </div>
 

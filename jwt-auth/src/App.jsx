@@ -12,6 +12,7 @@ import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Footer from "./components/Footer";
 import React from "react";
 import Journeys from "./pages/Journeys";
+import TicketPage from './pages/TicketPage';
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
                 element={<PaymentConfirmation />}
               />
               <Route path="/journeys" element={<Journeys />} />
+              <Route path="/ticket/:journeyId" element={<TicketPage />} />
             </Routes>
           </main>
 
