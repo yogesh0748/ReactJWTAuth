@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [isSignup, setIsSignup] = useState(true);
@@ -13,6 +14,7 @@ export default function Signup() {
   const [error, setError] = useState("");
 
   const { signup, login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +24,10 @@ export default function Signup() {
     try {
       if (isSignup) {
         await signup(email, password, fname, lname);
+        navigate("/");
       } else {
         await login(email, password);
+        navigate("/");
       }
     } catch (err) {
       setError(err.message);
@@ -33,14 +37,14 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 backdrop-blur-lg">
-      <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-96 border border-white/20 transform transition-transform duration-500 hover:scale-105">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-cyan-50 to-white">
+      <div className="bg-white p-8 rounded-3xl shadow-xl w-96 border border-gray-100 transform transition-transform duration-500 hover:scale-105">
         {/* Toggle */}
-        <div className="flex justify-center mb-6 space-x-2 bg-black/30 p-1 rounded-full">
+        <div className="flex justify-center mb-6 space-x-2 bg-gray-50 p-1 rounded-full">
           <button
             onClick={() => setIsSignup(true)}
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-              isSignup ? "bg-white text-black" : "text-gray-300"
+              isSignup ? "bg-blue-600 text-white" : "text-gray-600"
             }`}
           >
             Sign up
@@ -48,19 +52,19 @@ export default function Signup() {
           <button
             onClick={() => setIsSignup(false)}
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-              !isSignup ? "bg-white text-black" : "text-gray-300"
+              !isSignup ? "bg-blue-600 text-white" : "text-gray-600"
             }`}
           >
             Sign in
           </button>
         </div>
 
-        <h2 className="text-xl font-semibold text-center mb-4 text-white">
+        <h2 className="text-xl font-semibold text-center mb-4 text-slate-900">
           {isSignup ? "Create an account" : "Welcome back"}
         </h2>
 
         {error && (
-          <p className="text-red-400 text-sm bg-red-900/50 p-2 rounded text-center mb-4 animate-pulse">
+          <p className="text-red-600 text-sm bg-red-50 p-2 rounded text-center mb-4">
             {error}
           </p>
         )}
@@ -71,7 +75,7 @@ export default function Signup() {
               <input
                 type="text"
                 placeholder="First name"
-                className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                className="bg-gray-50 text-slate-900 placeholder-gray-400 rounded-xl p-3 w-1/2 focus:ring-2 focus:ring-blue-500 focus:outline-none border border-gray-200"
                 value={fname}
                 onChange={(e) => setFname(e.target.value)}
                 required
@@ -79,7 +83,7 @@ export default function Signup() {
               <input
                 type="text"
                 placeholder="Last name"
-                className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-1/2 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                className="bg-gray-50 text-slate-900 placeholder-gray-400 rounded-xl p-3 w-1/2 focus:ring-2 focus:ring-blue-500 focus:outline-none border border-gray-200"
                 value={lname}
                 onChange={(e) => setLname(e.target.value)}
                 required
@@ -90,7 +94,7 @@ export default function Signup() {
           <input
             type="email"
             placeholder="Enter your email"
-            className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-full focus:ring-2 focus:ring-teal-400 focus:outline-none"
+            className="bg-gray-50 text-slate-900 placeholder-gray-400 rounded-xl p-3 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none border border-gray-200"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -99,7 +103,7 @@ export default function Signup() {
           <input
             type="password"
             placeholder="Enter your password"
-            className="bg-white/10 text-white placeholder-gray-400 rounded-lg p-3 w-full focus:ring-2 focus:ring-teal-400 focus:outline-none"
+            className="bg-gray-50 text-slate-900 placeholder-gray-400 rounded-xl p-3 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none border border-gray-200"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -108,10 +112,10 @@ export default function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
+            className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
               loading
-                ? "bg-teal-400/60 text-gray-200 cursor-not-allowed animate-pulse"
-                : "bg-gradient-to-r from-teal-500 to-cyan-500 hover:scale-105 hover:from-teal-400 hover:to-cyan-400 text-white"
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
             {loading
@@ -124,17 +128,19 @@ export default function Signup() {
           </button>
         </form>
 
-        <p className="text-center text-gray-400 mt-4 text-sm">OR SIGN IN WITH</p>
+        <p className="text-center text-gray-600 mt-4 text-sm">OR SIGN IN WITH</p>
 
         <div className="flex justify-center mt-3 space-x-3">
-          <button className="bg-white/10 hover:bg-white/20 p-3 rounded-lg">
+          <button className="bg-gray-50 hover:bg-gray-100 p-3 rounded-xl border border-gray-200">
             <FcGoogle size={22} />
           </button>
-          <button className="bg-white/10 hover:bg-white/20 p-3 rounded-lg">
-            <FaApple size={22} />
+          <button className="bg-gray-50 hover:bg-gray-100 p-3 rounded-xl border border-gray-200">
+            <FaApple size={22} className="text-slate-900" />
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+

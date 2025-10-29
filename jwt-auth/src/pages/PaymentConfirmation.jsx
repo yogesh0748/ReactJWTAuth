@@ -27,7 +27,7 @@ export default function PaymentConfirmation() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white pt-20 px-4"
+      className="min-h-screen bg-gradient-to-b from-cyan-50 to-white pt-20 px-4"
     >
       <div className="max-w-2xl mx-auto text-center">
         <motion.div
@@ -36,17 +36,17 @@ export default function PaymentConfirmation() {
           transition={{ type: "spring", stiffness: 100 }}
           className="mb-8"
         >
-          <CheckCircle className="w-20 h-20 text-green-400 mx-auto" />
+          <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
         </motion.div>
 
-        <h1 className="text-4xl font-bold mb-4">Payment Successful!</h1>
-        <p className="text-white/70 mb-8">Your booking has been confirmed</p>
+        <h1 className="text-4xl font-bold mb-4 text-slate-900">Payment Successful!</h1>
+        <p className="text-gray-600 mb-8">Your booking has been confirmed</p>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 mb-8">
+        <div className="bg-white rounded-xl p-6 mb-8 shadow-lg border border-gray-100">
           <div className="space-y-4">
             <div>
-              <p className="text-white/50">Booking Reference</p>
-              <p className="text-xl font-semibold">
+              <p className="text-gray-500">Booking Reference</p>
+              <p className="text-xl font-semibold text-slate-900">
                 {`${journey.busNumber}-${seats[0] + 1}`.toUpperCase()}
               </p>
             </div>
@@ -89,7 +89,7 @@ export default function PaymentConfirmation() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/')}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 font-medium"
+            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium"
           >
             Return Home
           </motion.button>
@@ -98,7 +98,7 @@ export default function PaymentConfirmation() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.print()}
-            className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 font-medium"
+            className="px-6 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-slate-900 font-medium border border-gray-200"
           >
             Download Ticket
           </motion.button>

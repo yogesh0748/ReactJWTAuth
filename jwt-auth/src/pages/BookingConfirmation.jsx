@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
-import { initializeRazorpay } from '../utils/razorpay';
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
+import { initializeRazorpay } from "../utils/razorpay";
+import { CheckCircle } from "lucide-react";
 
 export default function BookingConfirmation() {
   const location = useLocation();
@@ -12,14 +13,14 @@ export default function BookingConfirmation() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
-  const [paymentStatus, setPaymentStatus] = useState('pending');
-  
+  const [paymentStatus, setPaymentStatus] = useState("pending");
+
   const { seats, journey } = location.state || {};
   const totalPrice = seats?.length * journey?.pricePerSeat || 0;
 
   useEffect(() => {
     if (!journey || !seats) {
-      navigate('/search');
+      navigate("/search");
       return;
     }
 
@@ -36,23 +37,22 @@ export default function BookingConfirmation() {
 
   const createOrder = async () => {
     try {
-      // Create order in Firebase
       const orderRef = await addDoc(collection(db, "orders"), {
         userId: user.uid,
         userName: `${userDetails.fname} ${userDetails.lname}`,
         userEmail: userDetails.email,
         journeyId: journey.id,
         seats: seats,
-        amount: totalPrice * 100, // Razorpay expects amount in paise
-        status: 'created',
-        createdAt: serverTimestamp()
+        amount: totalPrice * 100, // Razorpay expects paise
+        status: "created",
+        createdAt: serverTimestamp(),
       });
 
       return {
         id: orderRef.id,
         amount: totalPrice * 100,
         userName: `${userDetails.fname} ${userDetails.lname}`,
-        userEmail: userDetails.email
+        userEmail: userDetails.email,
       };
     } catch (error) {
       console.error("Error creating order:", error);
@@ -62,23 +62,25 @@ export default function BookingConfirmation() {
 
   const handlePaymentSuccess = async (paymentResponse) => {
     try {
-      // Update payment status in Firebase
+      // update order status using created order id
       await updateDoc(doc(db, "orders", paymentResponse.razorpay_order_id), {
-        status: 'paid',
+        status: "paid",
         paymentId: paymentResponse.razorpay_payment_id,
         paymentSignature: paymentResponse.razorpay_signature,
-        paidAt: serverTimestamp()
+        paidAt: serverTimestamp(),
       });
 
-      // Navigate to success page
-      navigate('/payment-confirmation', {
+      setPaymentStatus("success");
+
+      // navigate to payment confirmation with nice transition
+      navigate("/payment-confirmation", {
         state: {
           journey,
           seats,
           userDetails,
           totalAmount: totalPrice,
-          paymentId: paymentResponse.razorpay_payment_id
-        }
+          paymentId: paymentResponse.razorpay_payment_id,
+        },
       });
     } catch (error) {
       console.error("Error updating payment status:", error);
@@ -103,97 +105,127 @@ export default function BookingConfirmation() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white pt-20 px-4"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="min-h-screen bg-gradient-to-b from-cyan-50 to-white pt-20 pb-10 px-4"
     >
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Booking Confirmation</h1>
+        <motion.h1
+          initial={{ scale: 0.98 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 90 }}
+          className="text-3xl font-bold mb-6 text-slate-900"
+        >
+          Booking Confirmation
+        </motion.h1>
 
         {/* User Details */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Passenger Details</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-gray-100"
+        >
+          <h2 className="text-lg font-semibold mb-3 text-slate-900">Passenger Details</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-white/50">Name</p>
-              <p className="font-medium">{userDetails.fname} {userDetails.lname}</p>
+              <p className="text-sm text-gray-500">Name</p>
+              <p className="font-medium text-slate-800">{userDetails.fname} {userDetails.lname}</p>
             </div>
             <div>
-              <p className="text-white/50">Email</p>
-              <p className="font-medium">{userDetails.email}</p>
+              <p className="text-sm text-gray-500">Email</p>
+              <p className="font-medium text-slate-800">{userDetails.email}</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Journey Details */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Journey Details</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-gray-100"
+        >
+          <h2 className="text-lg font-semibold mb-3 text-slate-900">Journey Details</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-white/50">From</p>
-              <p className="font-medium">{journey.source}</p>
+              <p className="text-sm text-gray-500">From</p>
+              <p className="font-medium text-slate-800">{journey.source}</p>
             </div>
             <div>
-              <p className="text-white/50">To</p>
-              <p className="font-medium">{journey.destination}</p>
+              <p className="text-sm text-gray-500">To</p>
+              <p className="font-medium text-slate-800">{journey.destination}</p>
             </div>
             <div>
-              <p className="text-white/50">Date</p>
-              <p className="font-medium">{journey.date}</p>
+              <p className="text-sm text-gray-500">Date</p>
+              <p className="font-medium text-slate-800">{journey.date}</p>
             </div>
             <div>
-              <p className="text-white/50">Time</p>
-              <p className="font-medium">{journey.time}</p>
+              <p className="text-sm text-gray-500">Time</p>
+              <p className="font-medium text-slate-800">{journey.time}</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Booking Details */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Booking Details</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-gray-100"
+        >
+          <h2 className="text-lg font-semibold mb-3 text-slate-900">Booking Details</h2>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <p className="text-white/50">Selected Seats</p>
-              <p className="font-medium">
-                {seats.map(seat => `Seat ${seat + 1}`).join(', ')}
-              </p>
+              <p className="text-sm text-gray-500">Selected Seats</p>
+              <p className="font-medium text-slate-800">{seats.map((s) => `Seat ${s + 1}`).join(", ")}</p>
             </div>
             <div className="flex justify-between items-center">
-              <p className="text-white/50">Price per Seat</p>
-              <p className="font-medium">₹{journey.pricePerSeat}</p>
+              <p className="text-sm text-gray-500">Price per Seat</p>
+              <p className="font-medium text-slate-800">₹{journey.pricePerSeat}</p>
             </div>
-            <div className="flex justify-between items-center text-lg font-semibold">
+            <div className="flex justify-between items-center text-lg font-semibold text-slate-900">
               <p>Total Amount</p>
               <p>₹{totalPrice}</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Payment Section */}
-        {paymentStatus === 'pending' ? (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handlePayment}
-            disabled={loading}
-            className="w-full py-4 rounded-xl font-medium bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 transition-all"
-          >
-            {loading ? 'Processing Payment...' : `Pay ₹${totalPrice}`}
-          </motion.button>
-        ) : (
-          <div className="text-center space-y-4">
-            <div className="text-green-400 text-xl font-semibold">
-              Payment Successful!
-            </div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          {paymentStatus === "pending" ? (
             <motion.button
               whileHover={{ scale: 1.02 }}
-              onClick={() => navigate('/')}
-              className="px-8 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
+              whileTap={{ scale: 0.98 }}
+              onClick={handlePayment}
+              disabled={loading}
+              className="w-full py-4 rounded-2xl font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-all"
             >
-              Return to Home
+              {loading ? "Processing Payment..." : `Pay ₹${totalPrice}`}
             </motion.button>
-          </div>
-        )}
+          ) : (
+            <div className="text-center space-y-4">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 90 }}
+                className="mx-auto w-24 h-24 rounded-full bg-white flex items-center justify-center shadow"
+              >
+                <CheckCircle className="w-12 h-12 text-green-500" />
+              </motion.div>
+
+              <div className="text-green-600 text-xl font-semibold">Payment Successful!</div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => navigate("/")}
+                className="px-6 py-3 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50 text-slate-900 transition-all"
+              >
+                Return to Home
+              </motion.button>
+            </div>
+          )}
+        </motion.div>
       </div>
     </motion.div>
   );

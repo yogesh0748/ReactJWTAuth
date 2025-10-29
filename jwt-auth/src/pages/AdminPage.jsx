@@ -90,15 +90,15 @@ export default function AdminPage() {
     );
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center text-slate-900">
         🚌 Admin Panel - Bus Management
       </h1>
 
       {/* Journey Creation Form */}
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4"
+        className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-4"
       >
         <div className="grid grid-cols-2 gap-4">
           <input
@@ -108,7 +108,7 @@ export default function AdminPage() {
             value={formData.source}
             onChange={handleChange}
             required
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           />
           <input
             type="text"
@@ -117,7 +117,7 @@ export default function AdminPage() {
             value={formData.destination}
             onChange={handleChange}
             required
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           />
         </div>
 
@@ -128,7 +128,7 @@ export default function AdminPage() {
             value={formData.date}
             onChange={handleChange}
             required
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           />
           <input
             type="time"
@@ -136,7 +136,7 @@ export default function AdminPage() {
             value={formData.time}
             onChange={handleChange}
             required
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           />
         </div>
 
@@ -148,13 +148,13 @@ export default function AdminPage() {
             value={formData.busNumber}
             onChange={handleChange}
             required
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           />
           <select
             name="busType"
             value={formData.busType}
             onChange={handleChange}
-            className="p-2 rounded bg-gray-700 text-white"
+            className="p-2 rounded bg-gray-50 text-slate-900 border border-gray-200"
           >
             <option value="Seater">Seater</option>
             <option value="Sleeper">Sleeper</option>
@@ -167,7 +167,7 @@ export default function AdminPage() {
 
         {/* Price per Seat */}
         <div>
-          <label className="text-white/70 text-sm font-medium mb-2 block">
+          <label className="text-slate-900/70 text-sm font-medium mb-2 block">
             Price per Seat (₹)
           </label>
           <input
@@ -175,7 +175,7 @@ export default function AdminPage() {
             name="pricePerSeat"
             value={formData.pricePerSeat}
             onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-cyan-500 transition-all"
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-900/30 focus:outline-none focus:border-cyan-500 transition-all"
             placeholder="Enter price per seat"
             required
           />
@@ -215,51 +215,53 @@ export default function AdminPage() {
 
       {/* List of Bus Journeys */}
       <div className="mt-10 max-w-5xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">📋 Existing Bus Journeys</h2>
-        {journeys.length === 0 ? (
-          <p className="text-gray-400">No journeys found.</p>
-        ) : (
-          <table className="w-full text-left border border-gray-700 rounded-lg overflow-hidden">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="p-3">Source</th>
-                <th className="p-3">Destination</th>
-                <th className="p-3">Date</th>
-                <th className="p-3">Time</th>
-                <th className="p-3">Bus No.</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Seats</th>
-                <th className="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {journeys.map((j) => (
-                <tr
-                  key={j.id}
-                  className="border-t border-gray-700 hover:bg-gray-800"
-                >
-                  <td className="p-3">{j.source}</td>
-                  <td className="p-3">{j.destination}</td>
-                  <td className="p-3">{j.date}</td>
-                  <td className="p-3">{j.time}</td>
-                  <td className="p-3">{j.busNumber}</td>
-                  <td className="p-3">{j.busType}</td>
-                  <td className="p-3">
-                    {j.seats?.filter((s) => s.available).length || 0}/40
-                  </td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleDelete(j.id)}
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
+        <h2 className="text-2xl font-semibold mb-4 text-slate-900">📋 Existing Bus Journeys</h2>
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+          {journeys.length === 0 ? (
+            <p className="text-gray-400">No journeys found.</p>
+          ) : (
+            <table className="w-full text-left border border-gray-700 rounded-lg overflow-hidden">
+              <thead className="bg-gray-700">
+                <tr>
+                  <th className="p-3">Source</th>
+                  <th className="p-3">Destination</th>
+                  <th className="p-3">Date</th>
+                  <th className="p-3">Time</th>
+                  <th className="p-3">Bus No.</th>
+                  <th className="p-3">Type</th>
+                  <th className="p-3">Seats</th>
+                  <th className="p-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {journeys.map((j) => (
+                  <tr
+                    key={j.id}
+                    className="border-t border-gray-700 hover:bg-gray-800"
+                  >
+                    <td className="p-3">{j.source}</td>
+                    <td className="p-3">{j.destination}</td>
+                    <td className="p-3">{j.date}</td>
+                    <td className="p-3">{j.time}</td>
+                    <td className="p-3">{j.busNumber}</td>
+                    <td className="p-3">{j.busType}</td>
+                    <td className="p-3">
+                      {j.seats?.filter((s) => s.available).length || 0}/40
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => handleDelete(j.id)}
+                        className="text-red-400 hover:text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -2,40 +2,42 @@ import React, { useEffect, useState } from "react";
 import RealisticCube from "./RealisticCube";
 import "../styles/MagneticButton.css";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import UpcomingJourneysHero from "./UpcomingJourneysHero";
 
 export default function HeroSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [searchParams] = useSearchParams();
 
-  // Particle field setup
+  // subtle particle field (kept but toned down)
   useEffect(() => {
     const particleField = document.getElementById("particleField");
     if (!particleField) return;
     particleField.innerHTML = "";
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 24; i++) {
       const particle = document.createElement("div");
       particle.className = "particle";
-      particle.style.setProperty("--x", `${Math.random() * 200 - 100}px`);
-      particle.style.setProperty("--y", `${Math.random() * 200 - 100}px`);
-      particle.style.animation = `particleFloat ${1 + Math.random() * 2}s infinite`;
+      particle.style.setProperty("--x", `${Math.random() * 160 - 80}px`);
+      particle.style.setProperty("--y", `${Math.random() * 160 - 80}px`);
+      particle.style.animation = `particleFloat ${2 + Math.random() * 3}s infinite`;
       particle.style.left = `${Math.random() * 100}%`;
       particle.style.top = `${Math.random() * 100}%`;
       particleField.appendChild(particle);
     }
   }, []);
 
-  // Auto redirect after 5s
+  // Auto redirect after 5s in popup
   useEffect(() => {
     if (showPopup) {
       setProgress(0);
       let value = 0;
       const interval = setInterval(() => {
-        value += 1;
+        value += 2;
         setProgress(value);
         if (value >= 100) {
           clearInterval(interval);
@@ -51,38 +53,68 @@ export default function HeroSection() {
     else navigate("/search");
   };
 
+  // If route has filter=upcoming, show the UpcomingJourneysHero instead of default hero
+  const filter = searchParams.get("filter") || "";
+
+  if (filter.toLowerCase() === "upcoming") {
+    return <UpcomingJourneysHero />;
+  }
+
   return (
-    <section className="flex flex-col md:flex-row items-center justify-between min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white px-8 md:px-16 py-12 overflow-hidden mt-16 relative">
-      {/* Left Side */}
-      <div className="md:w-1/2 flex flex-col items-start space-y-6 z-10">
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight font-[Playfair_Display]">
-          "Travel not to escape life, <br />
-          but so life doesn't escape you."
-        </h1>
-        <p className="text-gray-300 text-lg max-w-md">
-          Experience the journey, not just the destination. Let every mile bring
-          you a new story.
-        </p>
+    <section className="relative overflow-hidden pt-6">
+      {/* Light background matching navbar theme */}
+      <div className="min-h-[72vh] flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-6 md:px-12 py-12 bg-gradient-to-b from-cyan-50 to-white rounded-2xl shadow-sm">
+        {/* Left content */}
+        <div className="md:w-1/2 z-10">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+            Book fast. Travel easy.
+          </h1>
+          <p className="mt-4 text-slate-600 max-w-xl">
+            GoGoBus — your online bus reservation platform. Real-time seat
+            availability, secure payments, and instant e-tickets for stress-free
+            journeys.
+          </p>
 
-        {/* Magnetic Button */}
-        <button className="btn magnetic mt-4" onClick={handleJourneyClick}>
-          <span>Start Your Journey</span>
-          <div className="particles-field" id="particleField"></div>
-        </button>
-      </div>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <button
+              onClick={handleJourneyClick}
+              className="px-6 py-3 rounded-full text-white font-semibold bg-blue-600 hover:bg-blue-700 shadow-md transition"
+            >
+              Start Your Journey
+            </button>
 
-      {/* Right Side */}
-      <div className="md:w-1/2 mt-20 md:mt-0 flex justify-center items-center overflow-visible">
-        <div className="w-64 h-64">
-          <RealisticCube />
+            <button
+              onClick={() => navigate("/routes")}
+              className="px-5 py-3 rounded-full text-slate-800 font-medium border border-gray-300 bg-white hover:bg-gray-50 transition"
+            >
+              View Routes
+            </button>
+
+            <div className="text-sm text-slate-500 mt-2 sm:mt-0">
+              Prefer phone?{" "}
+              <span className="text-slate-700 font-medium">+1 (800) GOGOBUS</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right visual */}
+        <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center items-center z-10">
+          <div className="w-72 h-72 bg-white rounded-2xl shadow-lg flex items-center justify-center">
+            <RealisticCube />
+          </div>
+        </div>
+
+        {/* subtle particles absolute layer (for the magnetic button) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div id="particleField" className="w-full h-full"></div>
         </div>
       </div>
 
-      {/* Slide-in Popup (content-sized, no blur, cross on right) */}
+      {/* Slide-in Signup prompt (light card matching theme) */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
-            className="fixed inset-0 bg-black/50 z-50 flex justify-end"
+            className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-end"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -91,38 +123,47 @@ export default function HeroSection() {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="relative w-full sm:w-[400px] bg-gray-900/95 border-l border-white/20 rounded-l-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] p-8 text-white my-auto mr-4"
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="relative w-full sm:w-[420px] bg-white rounded-l-2xl shadow-2xl border-l border-slate-200 p-6 m-4"
             >
-              {/* Close Button on Right */}
               <button
                 onClick={() => setShowPopup(false)}
-                className="absolute top-4 right-4 text-white/70 hover:text-white transition"
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+                aria-label="Close"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
 
-              {/* Content */}
-              <div className="flex flex-col justify-center items-center text-center">
-                <h2 className="text-3xl font-bold mb-3">Sign In Required</h2>
-                <p className="text-gray-300 mb-6 max-w-sm">
-                  Please sign in to start your journey.
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-slate-900">
+                  Please sign in
+                </h2>
+                <p className="mt-2 text-sm text-slate-600 mb-4">
+                  Sign in or create an account to book tickets and manage your
+                  trips.
                 </p>
 
-                {/* Progress Bar */}
-                <div className="w-full bg-white/20 rounded-full h-2 mb-4 overflow-hidden">
+                <div className="w-full bg-slate-100 rounded-full h-2 mb-4 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-2 transition-all duration-100"
+                    className="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 transition-all duration-75"
                     style={{ width: `${progress}%` }}
                   ></div>
                 </div>
 
-                <button
-                  onClick={() => navigate("/signup")}
-                  className="mt-2 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 px-6 py-2 rounded-full font-semibold text-white shadow-md"
-                >
-                  Go to Signup
-                </button>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="px-4 py-2 rounded-full border border-gray-300 bg-white text-slate-700 hover:bg-gray-50"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    Create account
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
