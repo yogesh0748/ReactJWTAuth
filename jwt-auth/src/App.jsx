@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import React from "react";
 import Journeys from "./pages/Journeys";
 import TicketPage from './pages/TicketPage';
+// import Chatbot from './component/Chatbot';
 
 export default function App() {
   return (
@@ -41,7 +42,9 @@ export default function App() {
               <Route path="/journeys" element={<Journeys />} />
               <Route path="/ticket/:journeyId" element={<TicketPage />} />
             </Routes>
+
           </main>
+           {/* <Chatbot />/ */}
 
           {/* Footer inserted here so it always sits at bottom */}
           <Footer />

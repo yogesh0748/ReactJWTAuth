@@ -1,5 +1,5 @@
-npm install framer-motion lucide-react
-
-
+npm install framer-motion lucide-react 
+npm i @radix-ui/react-label @radix-ui/react-slot @radix-ui/react-switch @radix-ui/react-tabs
+npx shadcn-ui@latest add button card input label tabs
 mobile menu 
     https://prismic.io/blog/css-button-animations
