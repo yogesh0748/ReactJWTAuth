@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import {
@@ -21,6 +23,13 @@ import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
+
+// Add this at the top level outside the component
+const loginAttempts = new Map();
+const RATE_LIMIT = {
+  maxAttempts: 5,
+  windowMs: 10 * 60 * 1000, // 10 minutes in milliseconds
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -46,9 +55,42 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  // Add this helper function
+  const checkRateLimit = (email) => {
+    const now = Date.now();
+    const userAttempts = loginAttempts.get(email) || [];
+    
+    // Clean up old attempts outside the window
+    const validAttempts = userAttempts.filter(
+      timestamp => now - timestamp < RATE_LIMIT.windowMs
+    );
+    
+    if (validAttempts.length >= RATE_LIMIT.maxAttempts) {
+      const oldestAttempt = validAttempts[0];
+      const timeRemaining = Math.ceil((RATE_LIMIT.windowMs - (now - oldestAttempt)) / 1000 / 60);
+      throw new Error(`Too many login attempts. Please try again in ${timeRemaining} minutes.`);
+    }
+    
+    // Add new attempt
+    validAttempts.push(now);
+    loginAttempts.set(email, validAttempts);
+  };
+
   // ✅ Login
   const login = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+      checkRateLimit(email);
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      if (error.message.includes("Too many login attempts")) {
+        throw error;
+      }
+      // For other errors, still track the attempt
+      const userAttempts = loginAttempts.get(email) || [];
+      userAttempts.push(Date.now());
+      loginAttempts.set(email, userAttempts);
+      throw error;
+    }
   };
 
   // ✅ Logout (with cleanup)
@@ -144,6 +186,31 @@ export const AuthProvider = ({ children }) => {
     await deleteDoc(doc(db, "busJourneys", id));
   };
 
+  // Add this new function
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const userRef = doc(db, "users", result.user.uid);
+      
+      // Check if user document exists
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        // Create new user document if it doesn't exist
+        await setDoc(userRef, {
+          email: result.user.email,
+          fname: result.user.displayName?.split(' ')[0] || '',
+          lname: result.user.displayName?.split(' ').slice(1).join(' ') || '',
+          role: "user",
+          createdAt: new Date(),
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value = {
     user,
     role,
@@ -154,6 +221,7 @@ export const AuthProvider = ({ children }) => {
     getBusJourneys,
     deleteBusJourney,
     listenBusJourneys,
+    signInWithGoogle, // Add this to the context value
   };
 
   return (

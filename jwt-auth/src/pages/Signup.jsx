@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -23,7 +22,7 @@ export default function Signup() {
   const [alertActionLabel, setAlertActionLabel] = useState("");
   const [alertAction, setAlertAction] = useState(null);
 
-  const { signup, login } = useAuth();
+  const { signup, login, signInWithGoogle } = useAuth(); // Add signInWithGoogle
   const navigate = useNavigate();
 
   const emailIsValid = (e) => /^\S+@\S+\.\S+$/.test(e);
@@ -121,6 +120,20 @@ export default function Signup() {
     }
   };
 
+  // Add this function to handle Google sign in
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      navigate('/');
+    } catch (err) {
+      const msg = err?.message || "Google sign in failed";
+      showAlert(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-cyan-50 to-white">
       <div className="bg-white p-8 rounded-3xl shadow-xl w-96 border border-gray-100 transform transition-transform duration-500 hover:scale-105">
@@ -147,12 +160,6 @@ export default function Signup() {
         <h2 className="text-xl font-semibold text-center mb-4 text-slate-900">
           {isSignup ? "Create an account" : "Welcome back"}
         </h2>
-
-        {error && (
-          <p className="text-red-600 text-sm bg-red-50 p-2 rounded text-center mb-4">
-            {error}
-          </p>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignup && (
@@ -215,12 +222,14 @@ export default function Signup() {
 
         <p className="text-center text-gray-600 mt-4 text-sm">OR SIGN IN WITH</p>
 
-        <div className="flex justify-center mt-3 space-x-3">
-          <button className="bg-gray-50 hover:bg-gray-100 p-3 rounded-xl border border-gray-200">
+        <div className="flex justify-center mt-3">
+          <button 
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-4 py-3 rounded-xl border border-gray-200 transition-colors"
+          >
             <FcGoogle size={22} />
-          </button>
-          <button className="bg-gray-50 hover:bg-gray-100 p-3 rounded-xl border border-gray-200">
-            <FaApple size={22} className="text-slate-900" />
+            <span className="text-sm text-gray-600">Sign in with Google</span>
           </button>
         </div>
       </div>
